@@ -1,0 +1,107 @@
+{{template "base" .}}
+
+{{define "title"}}Budgets — Expense Manager{{end}}
+
+{{define "content"}}
+<div class="page-header">
+  <h1>Budgets</h1>
+</div>
+
+{{if .BudgetStatuses}}
+<section class="section">
+  <h2>Spending Status</h2>
+  <div class="budget-list">
+    {{range .BudgetStatuses}}
+    <div class="budget-item" id="budget-{{.Category}}">
+      <div class="budget-header">
+        <span class="badge">{{.Category}}</span>
+        <span>{{printf "%.2f" .Spent}} / {{printf "%.2f" .Limit}} {{$.DefaultCurrency}}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill {{if .OverBudget}}progress-danger{{else if .Alert}}progress-warning{{else}}progress-ok{{end}}"
+          style="width: {{if gt .Percent 100}}100{{else}}{{.Percent}}{{end}}%"></div>
+      </div>
+      <div class="budget-footer">
+        {{if .OverBudget}}
+        <span class="text-danger">Over budget by {{printf "%.2f" .OverAmount}} {{$.DefaultCurrency}}</span>
+        {{else if .Alert}}
+        <span class="text-warning">{{printf "%.0f" .Percent}}% of budget used</span>
+        {{else}}
+        <span class="text-muted">{{printf "%.0f" .Percent}}% used</span>
+        {{end}}
+        <span class="text-muted">{{printf "%.2f" .Remaining}} remaining</span>
+      </div>
+    </div>
+    {{end}}
+  </div>
+</section>
+{{end}}
+
+<section class="section">
+  <h2>Budgets</h2>
+  {{if .Budgets}}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Monthly Limit</th>
+        <th>Currency</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Budgets}}
+      <tr>
+        <td><span class="badge">{{.Category}}</span></td>
+        <td>{{printf "%.2f" .MonthlyLimit}}</td>
+        <td>{{.Currency}}</td>
+        <td class="actions">
+          <button class="btn btn-sm btn-danger"
+            hx-delete="/budgets/{{.ID}}"
+            hx-confirm="Delete budget for {{.Category}}?"
+            hx-target="closest tr"
+            hx-swap="outerHTML swap:0.5s">Delete</button>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="empty-state">No budgets set. Add one below.</p>
+  {{end}}
+</section>
+
+<section class="section">
+  <h2>Add Budget</h2>
+  <div class="card">
+    <form action="/budgets" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select id="category" name="category" required>
+            <option value="">Select category</option>
+            {{range .Categories}}
+            <option value="{{.}}">{{.}}</option>
+            {{end}}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="monthly_limit">Monthly Limit</label>
+          <input type="number" id="monthly_limit" name="monthly_limit" step="0.01" min="0.01" required placeholder="0.00">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:1rem">
+        <label for="currency">Currency</label>
+        <select id="currency" name="currency">
+          {{range .Currencies}}
+          <option value="{{.}}" {{if eq . $.DefaultCurrency}}selected{{end}}>{{.}}</option>
+          {{end}}
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="width:auto">Add Budget</button>
+      </div>
+    </form>
+  </div>
+</section>
+{{end}}

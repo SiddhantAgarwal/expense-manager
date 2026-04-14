@@ -25,7 +25,7 @@ func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
 	// causing every page to render the same content. Instead, parse each
 	// page template into its own isolated template set with base.html.
 	pageTemplates := []string{
-		"login", "signup", "dashboard", "expenses", "expense_form",
+		"login", "signup", "dashboard", "expenses", "expense_form", "budgets", "recurring",
 	}
 
 	templates := make(map[string]*template.Template)
