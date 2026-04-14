@@ -1,0 +1,36 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{block "title" .}}Expense Manager{{end}}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+  {{if .Username}}
+  <nav>
+    <div class="nav-brand">Expense Manager</div>
+    <div class="nav-links">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/expenses">Expenses</a>
+      <a href="/budgets">Budgets</a>
+      <a href="/recurring">Recurring</a>
+      <a href="/reports">Reports</a>
+      <a href="/settings">Settings</a>
+    </div>
+    <div class="nav-user">
+      <span>{{.Username}}</span>
+      <form action="/logout" method="POST" class="inline">
+        <button type="submit" class="btn-link">Logout</button>
+      </form>
+    </div>
+  </nav>
+  {{end}}
+  <main>
+    {{block "content" .}}{{end}}
+  </main>
+</body>
+</html>
+{{end}}

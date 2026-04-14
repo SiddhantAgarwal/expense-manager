@@ -1,0 +1,85 @@
+{{template "base" .}}
+
+{{define "title"}}Dashboard — Expense Manager{{end}}
+
+{{define "content"}}
+<div class="page-header">
+  <h1>Dashboard</h1>
+  <p class="text-muted">Welcome back, {{.Username}}</p>
+</div>
+
+<div class="dashboard-grid">
+  <div class="card stat-card">
+    <div class="stat-label">This Month</div>
+    <div class="stat-value">{{printf "%.2f" .MonthlyTotal}} {{.DefaultCurrency}}</div>
+    <div class="stat-sub">{{len .RecentExpenses}} expense{{if ne (len .RecentExpenses) 1}}s{{end}}</div>
+  </div>
+
+  <div class="card stat-card">
+    <div class="stat-label">Budgets on Track</div>
+    <div class="stat-value">{{.BudgetsOnTrack}} / {{.TotalBudgets}}</div>
+  </div>
+</div>
+
+{{if .BudgetStatuses}}
+<section class="section">
+  <h2>Budget Status</h2>
+  <div class="budget-list">
+    {{range .BudgetStatuses}}
+    <div class="budget-item">
+      <div class="budget-header">
+        <span class="badge">{{.Category}}</span>
+        <span>{{printf "%.2f" .Spent}} / {{printf "%.2f" .Limit}} {{$.DefaultCurrency}}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill {{if .OverBudget}}progress-danger{{else if .Alert}}progress-warning{{else}}progress-ok{{end}}"
+          style="width: {{if gt .Percent 100}}100{{else}}{{.Percent}}{{end}}%"></div>
+      </div>
+      <div class="budget-footer">
+        {{if .OverBudget}}
+        <span class="text-danger">Over budget by {{printf "%.2f" .OverAmount}} {{$.DefaultCurrency}}</span>
+        {{else if .Alert}}
+        <span class="text-warning">{{printf "%.0f" .Percent}}% of budget used</span>
+        {{else}}
+        <span class="text-muted">{{printf "%.0f" .Percent}}% used</span>
+        {{end}}
+        <span class="text-muted">{{printf "%.2f" .Remaining}} remaining</span>
+      </div>
+    </div>
+    {{end}}
+  </div>
+</section>
+{{end}}
+
+{{if .RecentExpenses}}
+<section class="section">
+  <h2>Recent Expenses</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .RecentExpenses}}
+      <tr>
+        <td>{{.Date}}</td>
+        <td><span class="badge">{{.Category}}</span></td>
+        <td>{{.Description}}</td>
+        <td>{{printf "%.2f" .AmountBase}} {{$.DefaultCurrency}}</td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  <a href="/expenses" class="btn btn-ghost btn-sm" style="margin-top: 0.75rem">View all expenses</a>
+</section>
+{{else}}
+<section class="section">
+  <h2>Recent Expenses</h2>
+  <p class="empty-state">No expenses yet. <a href="/expenses/new">Add one?</a></p>
+</section>
+{{end}}
+{{end}}

@@ -1,0 +1,47 @@
+{{define "expense_edit_partial"}}
+<div class="modal-overlay" hx-on="click: if(event.target===this) this.remove()">
+  <div class="modal">
+    <h2>Edit Expense</h2>
+    <form hx-put="/expenses/{{.Expense.ID}}" hx-target="#edit-modal" hx-swap="innerHTML">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Amount</label>
+          <input type="number" name="amount" step="0.01" min="0.01"
+            value="{{printf "%.2f" .Expense.Amount}}" required>
+        </div>
+        <div class="form-group">
+          <label>Currency</label>
+          <select name="currency">
+            {{range .Currencies}}
+            <option value="{{.}}" {{if eq $.Expense.Currency .}}selected{{end}}>{{.}}</option>
+            {{end}}
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category</label>
+          <select name="category" required>
+            {{range .Categories}}
+            <option value="{{.}}" {{if eq $.Expense.Category .}}selected{{end}}>{{.}}</option>
+            {{end}}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" name="date" value="{{.Expense.Date}}" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" name="description" value="{{.Expense.Description}}">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+        <button type="button" class="btn btn-ghost btn-sm"
+          onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+{{end}}

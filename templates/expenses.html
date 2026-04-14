@@ -1,0 +1,73 @@
+{{template "base" .}}
+
+{{define "title"}}Expenses — Expense Manager{{end}}
+
+{{define "content"}}
+<div class="page-header">
+  <h1>Expenses</h1>
+  <a href="/expenses/new" class="btn btn-primary btn-sm">+ Add Expense</a>
+</div>
+
+<form class="filters" method="GET" action="/expenses">
+  <div class="filter-group">
+    <label>From</label>
+    <input type="date" name="from" value="{{.FilterFrom}}">
+  </div>
+  <div class="filter-group">
+    <label>To</label>
+    <input type="date" name="to" value="{{.FilterTo}}">
+  </div>
+  <div class="filter-group">
+    <label>Category</label>
+    <select name="category">
+      <option value="">All</option>
+      {{range .Categories}}
+      <option value="{{.}}" {{if eq $.FilterCategory .}}selected{{end}}>{{.}}</option>
+      {{end}}
+    </select>
+  </div>
+  <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+  <a href="/expenses" class="btn btn-ghost btn-sm">Clear</a>
+</form>
+
+{{if .Expenses}}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Category</th>
+      <th>Description</th>
+      <th>Amount</th>
+      <th>Base ({{.DefaultCurrency}})</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .Expenses}}
+    <tr>
+      <td>{{.Date}}</td>
+      <td><span class="badge">{{.Category}}</span></td>
+      <td>{{.Description}}</td>
+      <td>{{printf "%.2f" .Amount}} {{.Currency}}</td>
+      <td>{{printf "%.2f" .AmountBase}}</td>
+      <td class="actions">
+        <button class="btn btn-ghost btn-sm"
+          hx-get="/expenses/{{.ID}}/edit"
+          hx-target="#edit-modal"
+          hx-push-url="false">Edit</button>
+        <button class="btn btn-ghost btn-sm btn-danger"
+          hx-delete="/expenses/{{.ID}}"
+          hx-confirm="Delete this expense?"
+          hx-target="closest tr"
+          hx-swap="outerHTML swap:0.5s">Delete</button>
+      </td>
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+{{else}}
+<p class="empty-state">No expenses found. <a href="/expenses/new">Add one?</a></p>
+{{end}}
+
+<div id="edit-modal"></div>
+{{end}}

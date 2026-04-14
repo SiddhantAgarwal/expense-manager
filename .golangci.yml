@@ -1,0 +1,21 @@
+version: "2"
+
+linters:
+  default: standard
+  enable:
+    - wsl_v5
+    - tagalign
+    - noctx
+    - gocyclo
+    - errcheck
+    - prealloc
+    - recvcheck
+    - whitespace
+  settings:
+    gocyclo:
+      min-complexity: 10
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
