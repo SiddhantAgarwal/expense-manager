@@ -77,6 +77,9 @@ func main() {
 	protected.HandleFunc("/recurring/{id}", h.RecurringUpdate).Methods("PUT")
 	protected.HandleFunc("/recurring/{id}", h.RecurringDelete).Methods("DELETE")
 
+	// Report routes
+	protected.HandleFunc("/reports", h.ReportList).Methods("GET")
+
 	// Start recurring expense processor background goroutine
 	recurringSvc := services.NewRecurringProcessor(st)
 	recurringSvc.Start(ctx)

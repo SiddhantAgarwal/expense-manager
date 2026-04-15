@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"time"
 
 	"github.com/siddhantagarwal/expense-manager/internal/auth"
 	"github.com/siddhantagarwal/expense-manager/internal/middleware"
@@ -25,7 +26,7 @@ func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
 	// causing every page to render the same content. Instead, parse each
 	// page template into its own isolated template set with base.html.
 	pageTemplates := []string{
-		"login", "signup", "dashboard", "expenses", "expense_form", "budgets", "recurring",
+		"login", "signup", "dashboard", "expenses", "expense_form", "budgets", "recurring", "reports",
 	}
 
 	templates := make(map[string]*template.Template)
@@ -64,8 +65,9 @@ type authData struct {
 
 func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		err := h.templates["login"].ExecuteTemplate(w, "login.html", authData{})
-		log.Println(err)
+		if err := h.templates["login"].ExecuteTemplate(w, "login.html", authData{}); err != nil {
+			log.Println(err)
+		}
 
 		return
 	}
@@ -81,7 +83,9 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 
 	user, ok := users[username]
 	if !ok || !auth.CheckPassword(password, user.PasswordHash) {
-		_ = h.templates["login"].ExecuteTemplate(w, "login.html", authData{Error: "Invalid username or password"})
+		if err := h.templates["login"].ExecuteTemplate(w, "login.html", authData{Error: "Invalid username or password"}); err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
@@ -92,7 +96,9 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		_ = h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{})
+		if err := h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{}); err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
@@ -101,12 +107,16 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 	currency := r.FormValue("currency")
 
 	if len(username) < 3 {
-		_ = h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{Error: "Username must be at least 3 characters"})
+		if err := h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{Error: "Username must be at least 3 characters"}); err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
 	if len(password) < 6 {
-		_ = h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{Error: "Password must be at least 6 characters"})
+		if err := h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{Error: "Password must be at least 6 characters"}); err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
@@ -117,7 +127,9 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, exists := users[username]; exists {
-		_ = h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{Error: "Username already taken"})
+		if err := h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{Error: "Username already taken"}); err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
@@ -132,6 +144,7 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 		PasswordHash:    hash,
 		DefaultCurrency: currency,
 		ExchangeRates:   map[string]float64{},
+		CreatedAt:       time.Now(),
 	}
 
 	if err := h.store.SaveUsers(users); err != nil {
@@ -218,5 +231,7 @@ func (h *Handlers) Dashboard(w http.ResponseWriter, r *http.Request) {
 		TotalBudgets:    len(ud.Budgets),
 	}
 
-	_ = h.templates["dashboard"].ExecuteTemplate(w, "dashboard.html", data)
+	if err := h.templates["dashboard"].ExecuteTemplate(w, "dashboard.html", data); err != nil {
+		log.Println(err)
+	}
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"net/url"
 	"sort"
@@ -63,7 +64,9 @@ func (h *Handlers) ExpenseList(w http.ResponseWriter, r *http.Request) {
 		FilterCategory:  category,
 	}
 
-	_ = h.templates["expenses"].ExecuteTemplate(w, "expenses.html", data)
+	if err := h.templates["expenses"].ExecuteTemplate(w, "expenses.html", data); err != nil {
+		log.Println(err)
+	}
 }
 
 func filterExpenses(expenses []models.Expense, from, to, category string) []models.Expense {
@@ -122,7 +125,9 @@ func (h *Handlers) ExpenseNew(w http.ResponseWriter, r *http.Request) {
 		Today:           time.Now().Format("2006-01-02"),
 	}
 
-	_ = h.templates["expense_form"].ExecuteTemplate(w, "expense_form.html", data)
+	if err := h.templates["expense_form"].ExecuteTemplate(w, "expense_form.html", data); err != nil {
+		log.Println(err)
+	}
 }
 
 func (h *Handlers) ExpenseCreate(w http.ResponseWriter, r *http.Request) {
@@ -229,7 +234,9 @@ func (h *Handlers) ExpenseEdit(w http.ResponseWriter, r *http.Request) {
 		DefaultCurrency: users[username].DefaultCurrency,
 	}
 
-	_ = h.templates["expense_edit_partial"].ExecuteTemplate(w, "expense_edit_partial", data)
+	if err := h.templates["expense_edit_partial"].ExecuteTemplate(w, "expense_edit_partial", data); err != nil {
+		log.Println(err)
+	}
 }
 
 func (h *Handlers) ExpenseUpdate(w http.ResponseWriter, r *http.Request) {

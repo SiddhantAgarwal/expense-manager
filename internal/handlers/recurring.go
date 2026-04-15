@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -47,7 +48,9 @@ func (h *Handlers) RecurringList(w http.ResponseWriter, r *http.Request) {
 		Frequencies:       frequencies,
 	}
 
-	_ = h.templates["recurring"].ExecuteTemplate(w, "recurring.html", data)
+	if err := h.templates["recurring"].ExecuteTemplate(w, "recurring.html", data); err != nil {
+		log.Println(err)
+	}
 }
 
 func (h *Handlers) RecurringCreate(w http.ResponseWriter, r *http.Request) {
