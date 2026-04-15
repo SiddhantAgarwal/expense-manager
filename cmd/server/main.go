@@ -80,6 +80,12 @@ func main() {
 	// Report routes
 	protected.HandleFunc("/reports", h.ReportList).Methods("GET")
 
+	// Settings routes
+	protected.HandleFunc("/settings", h.SettingsPage).Methods("GET")
+	protected.HandleFunc("/settings", h.SettingsUpdate).Methods("POST")
+	protected.HandleFunc("/settings/rates/{currency}", h.SettingsDeleteRate).Methods("DELETE")
+	protected.HandleFunc("/settings/categories/{category}", h.SettingsDeleteCategory).Methods("DELETE")
+
 	// Start recurring expense processor background goroutine
 	recurringSvc := services.NewRecurringProcessor(st)
 	recurringSvc.Start(ctx)

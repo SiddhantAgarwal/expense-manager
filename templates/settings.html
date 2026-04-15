@@ -1,0 +1,166 @@
+{{template "base" .}}
+
+{{define "title"}}Settings — Expense Manager{{end}}
+
+{{define "content"}}
+<div class="page-header">
+  <h1>Settings</h1>
+</div>
+
+{{if .Error}}
+<div class="alert alert-error">{{if eq .Error "invalid_rate"}}Invalid exchange rate. Must be a positive number.{{else if eq .Error "empty_category"}}Category name cannot be empty.{{else if eq .Error "duplicate_category"}}Category already exists.{{else if eq .Error "category_in_use"}}Cannot delete a category that has expenses.{{else if eq .Error "wrong_password"}}Current password is incorrect.{{else if eq .Error "short_password"}}New password must be at least 6 characters.{{else if eq .Error "password_mismatch"}}New passwords do not match.{{else}}{{.Error}}{{end}}</div>
+{{end}}
+
+{{if .Success}}
+<div class="alert alert-success">{{if eq .Success "currency"}}Default currency updated.{{else if eq .Success "rate"}}Exchange rate saved.{{else if eq .Success "rate_deleted"}}Exchange rate removed.{{else if eq .Success "category"}}Category added.{{else if eq .Success "category_deleted"}}Category removed.{{else if eq .Success "password"}}Password changed successfully.{{else}}{{.Success}}{{end}}</div>
+{{end}}
+
+<section class="section">
+  <h2>Default Currency</h2>
+  <div class="card">
+    <form action="/settings" method="POST">
+      <input type="hidden" name="action" value="currency">
+      <div class="form-group">
+        <label for="default_currency">Select your default currency</label>
+        <select id="default_currency" name="default_currency">
+          {{range .Currencies}}
+          <option value="{{.}}" {{if eq $.DefaultCurrency .}}selected{{end}}>{{.}}</option>
+          {{end}}
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="width:auto">Save</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Exchange Rates</h2>
+  <p class="text-muted" style="margin-bottom:1rem">Rates define how much 1 unit of foreign currency equals in your default currency ({{.DefaultCurrency}}).</p>
+
+  {{if .SortedRates}}
+  <table class="table" style="margin-bottom:1rem">
+    <thead>
+      <tr>
+        <th>Currency</th>
+        <th>Rate</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .SortedRates}}
+      <tr>
+        <td>{{.Currency}}</td>
+        <td>{{printf "%.4f" .Rate}}</td>
+        <td>
+          <button class="btn btn-sm btn-danger"
+            hx-delete="/settings/rates/{{.Currency}}"
+            hx-confirm="Remove the {{.Currency}} exchange rate?"
+            hx-target="closest tr"
+            hx-swap="outerHTML swap:0.5s">Remove</button>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="empty-state" style="padding:1rem">No exchange rates configured.</p>
+  {{end}}
+
+  <div class="card">
+    <h3 style="margin-bottom:1rem">Add Exchange Rate</h3>
+    <form action="/settings" method="POST">
+      <input type="hidden" name="action" value="exchange_rate">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="currency">Currency</label>
+          <select id="currency" name="currency">
+            <option value="">Select currency</option>
+            {{range .Currencies}}
+            <option value="{{.}}" {{if eq $.DefaultCurrency .}}disabled{{end}}>{{.}}</option>
+            {{end}}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rate">Rate (1 unit = ? {{.DefaultCurrency}})</label>
+          <input type="number" id="rate" name="rate" step="0.0001" min="0.0001" required placeholder="e.g. 0.92">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="width:auto">Add Rate</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Categories</h2>
+  {{if .Categories}}
+  <table class="table" style="margin-bottom:1rem">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Categories}}
+      <tr>
+        <td>{{.}}</td>
+        <td>
+          <button class="btn btn-sm btn-danger"
+            hx-delete="/settings/categories/{{.}}"
+            hx-confirm="Remove the category '{{.}}'?"
+            hx-target="closest tr"
+            hx-swap="outerHTML swap:0.5s">Remove</button>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="empty-state" style="padding:1rem">No categories.</p>
+  {{end}}
+
+  <div class="card">
+    <h3 style="margin-bottom:1rem">Add Category</h3>
+    <form action="/settings" method="POST">
+      <input type="hidden" name="action" value="add_category">
+      <div class="form-group">
+        <label for="category">Category name</label>
+        <input type="text" id="category" name="category" required placeholder="e.g. Education">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="width:auto">Add Category</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Change Password</h2>
+  <div class="card">
+    <form action="/settings" method="POST">
+      <input type="hidden" name="action" value="password">
+      <div class="form-group">
+        <label for="current_password">Current password</label>
+        <input type="password" id="current_password" name="current_password" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="new_password">New password</label>
+          <input type="password" id="new_password" name="new_password" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="confirm_password">Confirm new password</label>
+          <input type="password" id="confirm_password" name="confirm_password" required minlength="6">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="width:auto">Change Password</button>
+      </div>
+    </form>
+  </div>
+</section>
+{{end}}

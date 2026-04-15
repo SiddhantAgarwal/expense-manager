@@ -180,6 +180,12 @@ main {
   border: 1px solid #fecaca;
 }
 
+.alert-success {
+  background: #f0fdf4;
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+}
+
 /* Page header */
 .page-header {
   display: flex;
