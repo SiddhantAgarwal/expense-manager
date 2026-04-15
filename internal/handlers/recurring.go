@@ -91,6 +91,7 @@ func (h *Handlers) RecurringCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dayOfMonthStr := r.FormValue("day_of_month")
+
 	dayOfMonth := 0
 	if dayOfMonthStr != "" {
 		dayOfMonth, err = strconv.Atoi(dayOfMonthStr)

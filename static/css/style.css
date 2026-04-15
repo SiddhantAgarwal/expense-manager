@@ -20,6 +20,19 @@
   --radius: 8px;
 }
 
+[data-theme="dark"] {
+  --primary: #818cf8;
+  --primary-hover: #6366f1;
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --error: #f87171;
+  --error-bg: #1e1a1a;
+  --success: #4ade80;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
@@ -545,6 +558,117 @@ main {
 .table-responsive {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Dark mode overrides for hard-coded colors */
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group select:focus {
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
+}
+
+[data-theme="dark"] .btn-primary {
+  color: #0f172a;
+}
+
+[data-theme="dark"] .btn-primary:active {
+  background: #6366f1;
+}
+
+[data-theme="dark"] .table th {
+  background: #1e293b;
+}
+
+[data-theme="dark"] .badge {
+  background: #312e81;
+  color: #c7d2fe;
+}
+
+[data-theme="dark"] .badge-success {
+  background: #052e16;
+  color: #4ade80;
+}
+
+[data-theme="dark"] .badge-muted {
+  background: #334155;
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .alert-success {
+  background: #052e16;
+  border-color: #166534;
+  color: #4ade80;
+}
+
+[data-theme="dark"] .alert-error {
+  background: #1e1a1a;
+  border-color: #7f1d1d;
+}
+
+[data-theme="dark"] .btn-secondary {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background: #334155;
+}
+
+[data-theme="dark"] .btn-danger:hover {
+  color: #fca5a5 !important;
+}
+
+[data-theme="dark"] .progress-bar {
+  background: #334155;
+}
+
+[data-theme="dark"] .progress-warning {
+  background: #f59e0b;
+}
+
+[data-theme="dark"] .text-warning {
+  color: #fbbf24;
+}
+
+[data-theme="dark"] .modal {
+  background: #1e293b;
+}
+
+[data-theme="dark"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 1.2rem;
+  line-height: 28px;
+  color: var(--text-muted);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.theme-toggle:hover {
+  color: var(--primary);
+}
+
+.theme-toggle-auth {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.4rem;
+  font-size: 1.1rem;
 }
 
 /* Responsive */
