@@ -35,6 +35,7 @@ func (rp *RecurringProcessor) run(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
+			log.Println("stopping recurring processor")
 			return
 		case <-ticker.C:
 			rp.processAll()

@@ -110,7 +110,7 @@ func main() {
 	}()
 
 	<-ctx.Done()
-	fmt.Println("\nShutting down gracefully...")
+	log.Println("Shutting down gracefully...")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -119,5 +119,5 @@ func main() {
 		fmt.Printf("Server forced to shutdown: %s\n", err)
 	}
 
-	fmt.Println("Expense manager exited.")
+	log.Println("Expense manager exited.")
 }
