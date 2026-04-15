@@ -64,7 +64,16 @@ func (h *Handlers) BudgetCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	category := r.FormValue("category")
+	if category == "" {
+		http.Error(w, "category is required", http.StatusBadRequest)
+		return
+	}
+
 	currency := r.FormValue("currency")
+	if !validCurrency(currency) {
+		http.Error(w, "invalid currency", http.StatusBadRequest)
+		return
+	}
 
 	ud, err := h.store.LoadUserData(username)
 	if err != nil {

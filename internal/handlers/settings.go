@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 
@@ -101,6 +102,10 @@ func (h *Handlers) SettingsDeleteCategory(w http.ResponseWriter, r *http.Request
 
 func (h *Handlers) updateCurrency(w http.ResponseWriter, r *http.Request, username string) {
 	currency := r.FormValue("default_currency")
+	if !validCurrency(currency) {
+		http.Redirect(w, r, "/settings?error=invalid_currency", http.StatusSeeOther)
+		return
+	}
 
 	users, err := h.store.LoadUsers()
 	if err != nil {
@@ -122,6 +127,11 @@ func (h *Handlers) updateCurrency(w http.ResponseWriter, r *http.Request, userna
 
 func (h *Handlers) addExchangeRate(w http.ResponseWriter, r *http.Request, username string) {
 	currency := r.FormValue("currency")
+	if !validCurrency(currency) {
+		http.Redirect(w, r, "/settings?error=invalid_currency", http.StatusSeeOther)
+		return
+	}
+
 	rate, err := strconv.ParseFloat(r.FormValue("rate"), 64)
 	if err != nil || rate <= 0 {
 		http.Redirect(w, r, "/settings?error=invalid_rate", http.StatusSeeOther)
@@ -173,7 +183,7 @@ func (h *Handlers) deleteExchangeRate(w http.ResponseWriter, r *http.Request, us
 }
 
 func (h *Handlers) addCategory(w http.ResponseWriter, r *http.Request, username string) {
-	category := r.FormValue("category")
+	category := strings.TrimSpace(r.FormValue("category"))
 	if category == "" {
 		http.Redirect(w, r, "/settings?error=empty_category", http.StatusSeeOther)
 		return
@@ -186,7 +196,7 @@ func (h *Handlers) addCategory(w http.ResponseWriter, r *http.Request, username 
 	}
 
 	for _, c := range ud.Categories {
-		if c == category {
+		if strings.EqualFold(c, category) {
 			http.Redirect(w, r, "/settings?error=duplicate_category", http.StatusSeeOther)
 			return
 		}

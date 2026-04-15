@@ -51,6 +51,13 @@ func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
 
 	templates["expense_edit_partial"] = t
 
+	t, err = template.ParseFiles(tmplDir + "/error.html")
+	if err != nil {
+		return nil, err
+	}
+
+	templates["error"] = t
+
 	return &Handlers{
 		store:     st,
 		auth:      au,
@@ -61,6 +68,13 @@ func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
 type authData struct {
 	Username string
 	Error    string
+}
+
+func (h *Handlers) NotFound(w http.ResponseWriter, r *http.Request) error {
+	return h.templates["error"].ExecuteTemplate(w, "error.html", map[string]string{
+		"Title":   "Page Not Found",
+		"Message": "The page you're looking for doesn't exist.",
+	})
 }
 
 func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
@@ -106,8 +120,8 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	currency := r.FormValue("currency")
 
-	if len(username) < 3 {
-		if err := h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{Error: "Username must be at least 3 characters"}); err != nil {
+	if !validUsername(username) {
+		if err := h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{Error: "Username must be 3-50 characters (letters, numbers, underscores)"}); err != nil {
 			log.Println(err)
 		}
 		return
@@ -118,6 +132,17 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		return
+	}
+
+	if len(password) > 72 {
+		if err := h.templates["signup"].ExecuteTemplate(w, "signup.html", authData{Error: "Password must be at most 72 characters"}); err != nil {
+			log.Println(err)
+		}
+		return
+	}
+
+	if !validCurrency(currency) {
+		currency = "USD"
 	}
 
 	users, err := h.store.LoadUsers()
