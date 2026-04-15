@@ -23,7 +23,7 @@
         <label for="currency">Currency</label>
         <select id="currency" name="currency">
           {{range .Currencies}}
-          <option value="{{.}}" {{if .IsEdit}}{{if eq $.Expense.Currency .}}selected{{end}}{{else}}{{if eq $.DefaultCurrency .}}selected{{end}}{{end}}>{{.}}</option>
+          <option value="{{.}}" {{if $.IsEdit}}{{if eq $.Expense.Currency .}}selected{{end}}{{else}}{{if eq $.DefaultCurrency .}}selected{{end}}{{end}}>{{.}}</option>
           {{end}}
         </select>
       </div>
@@ -34,7 +34,7 @@
         <label for="category">Category</label>
         <select id="category" name="category" required>
           {{range .Categories}}
-          <option value="{{.}}" {{if .IsEdit}}{{if eq $.Expense.Category .}}selected{{end}}{{end}}>{{.}}</option>
+          <option value="{{.}}" {{if $.IsEdit}}{{if eq $.Expense.Category .}}selected{{end}}{{end}}>{{.}}</option>
           {{end}}
         </select>
       </div>

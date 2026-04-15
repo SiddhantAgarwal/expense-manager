@@ -33,7 +33,7 @@
       </div>
       <div class="progress-bar">
         <div class="progress-fill {{if .OverBudget}}progress-danger{{else if .Alert}}progress-warning{{else}}progress-ok{{end}}"
-          style="width: {{if gt .Percent 100}}100{{else}}{{.Percent}}{{end}}%"></div>
+          style="width: {{if gt .Percent 100.0}}100{{else}}{{.Percent}}{{end}}%"></div>
       </div>
       <div class="budget-footer">
         {{if .OverBudget}}

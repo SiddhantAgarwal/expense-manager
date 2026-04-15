@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -48,7 +49,9 @@ func (h *Handlers) BudgetList(w http.ResponseWriter, r *http.Request) {
 		Currencies:      currencies,
 	}
 
-	_ = h.templates["budgets"].ExecuteTemplate(w, "budgets.html", data)
+	if err := h.templates["budgets"].ExecuteTemplate(w, "budgets.html", data); err != nil {
+		log.Println(err)
+	}
 }
 
 func (h *Handlers) BudgetCreate(w http.ResponseWriter, r *http.Request) {
