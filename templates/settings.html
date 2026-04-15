@@ -8,7 +8,7 @@
 </div>
 
 {{if .Error}}
-<div class="alert alert-error">{{if eq .Error "invalid_rate"}}Invalid exchange rate. Must be a positive number.{{else if eq .Error "empty_category"}}Category name cannot be empty.{{else if eq .Error "duplicate_category"}}Category already exists.{{else if eq .Error "category_in_use"}}Cannot delete a category that has expenses.{{else if eq .Error "wrong_password"}}Current password is incorrect.{{else if eq .Error "short_password"}}New password must be at least 6 characters.{{else if eq .Error "password_mismatch"}}New passwords do not match.{{else}}{{.Error}}{{end}}</div>
+<div class="alert alert-error">{{if eq .Error "invalid_rate"}}Invalid exchange rate. Must be a positive number.{{else if eq .Error "invalid_currency"}}Invalid currency selected.{{else if eq .Error "empty_category"}}Category name cannot be empty.{{else if eq .Error "duplicate_category"}}Category already exists.{{else if eq .Error "category_in_use"}}Cannot delete a category that has expenses.{{else if eq .Error "wrong_password"}}Current password is incorrect.{{else if eq .Error "short_password"}}New password must be at least 6 characters.{{else if eq .Error "password_mismatch"}}New passwords do not match.{{else}}{{.Error}}{{end}}</div>
 {{end}}
 
 {{if .Success}}

@@ -86,6 +86,12 @@ func main() {
 	protected.HandleFunc("/settings/rates/{currency}", h.SettingsDeleteRate).Methods("DELETE")
 	protected.HandleFunc("/settings/categories/{category}", h.SettingsDeleteCategory).Methods("DELETE")
 
+	// Custom 404 handler
+	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		_ = h.NotFound(w, r)
+	})
+
 	// Start recurring expense processor background goroutine
 	recurringSvc := services.NewRecurringProcessor(st)
 	recurringSvc.Start(ctx)

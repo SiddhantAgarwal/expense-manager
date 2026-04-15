@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"html/template"
 	"log"
 	"net/http"
 
@@ -9,14 +11,15 @@ import (
 )
 
 type reportListData struct {
-	Username           string
-	DefaultCurrency    string
-	CategoryBreakdowns []services.CategoryBreakdown
-	MonthlyTotals      []services.MonthSummary
-	TotalSpent         float64
-	FilterFrom         string
-	FilterTo           string
-	HasData            bool
+	Username               string
+	DefaultCurrency        string
+	CategoryBreakdowns     []services.CategoryBreakdown
+	CategoryBreakdownsJSON template.JS
+	MonthlyTotals          []services.MonthSummary
+	TotalSpent             float64
+	FilterFrom             string
+	FilterTo               string
+	HasData                bool
 }
 
 func (h *Handlers) ReportList(w http.ResponseWriter, r *http.Request) {
@@ -43,15 +46,18 @@ func (h *Handlers) ReportList(w http.ResponseWriter, r *http.Request) {
 	monthlyTotals := services.MonthlyTotals(ud.Expenses, from, to)
 	totalSpent := services.TotalSpent(ud.Expenses, from, to)
 
+	categoryJSON, _ := json.Marshal(categoryBreakdowns)
+
 	data := reportListData{
-		Username:           username,
-		DefaultCurrency:    user.DefaultCurrency,
-		CategoryBreakdowns: categoryBreakdowns,
-		MonthlyTotals:      monthlyTotals,
-		TotalSpent:         totalSpent,
-		FilterFrom:         from,
-		FilterTo:           to,
-		HasData:            len(ud.Expenses) > 0,
+		Username:               username,
+		DefaultCurrency:        user.DefaultCurrency,
+		CategoryBreakdowns:     categoryBreakdowns,
+		CategoryBreakdownsJSON: template.JS(categoryJSON),
+		MonthlyTotals:          monthlyTotals,
+		TotalSpent:             totalSpent,
+		FilterFrom:             from,
+		FilterTo:               to,
+		HasData:                len(ud.Expenses) > 0,
 	}
 
 	if err := h.templates["reports"].ExecuteTemplate(w, "reports.html", data); err != nil {

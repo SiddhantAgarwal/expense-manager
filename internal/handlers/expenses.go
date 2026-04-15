@@ -3,7 +3,6 @@ package handlers
 import (
 	"log"
 	"net/http"
-	"net/url"
 	"sort"
 	"strconv"
 	"time"
@@ -140,13 +139,26 @@ func (h *Handlers) ExpenseCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	currency := r.FormValue("currency")
-	category := r.FormValue("category")
-	date := r.FormValue("date")
-	description := r.FormValue("description")
+	if !validCurrency(currency) {
+		http.Error(w, "invalid currency", http.StatusBadRequest)
+		return
+	}
 
+	category := r.FormValue("category")
+	if category == "" {
+		http.Error(w, "category is required", http.StatusBadRequest)
+		return
+	}
+
+	date := r.FormValue("date")
 	if date == "" {
 		date = time.Now().Format("2006-01-02")
+	} else if !validDate(date) {
+		http.Error(w, "invalid date format", http.StatusBadRequest)
+		return
 	}
+
+	description := r.FormValue("description")
 
 	users, err := h.store.LoadUsers()
 	if err != nil {
@@ -251,8 +263,23 @@ func (h *Handlers) ExpenseUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	currency := r.FormValue("currency")
+	if !validCurrency(currency) {
+		http.Error(w, "invalid currency", http.StatusBadRequest)
+		return
+	}
+
 	category := r.FormValue("category")
+	if category == "" {
+		http.Error(w, "category is required", http.StatusBadRequest)
+		return
+	}
+
 	date := r.FormValue("date")
+	if !validDate(date) {
+		http.Error(w, "invalid date format", http.StatusBadRequest)
+		return
+	}
+
 	description := r.FormValue("description")
 
 	users, err := h.store.LoadUsers()
@@ -341,16 +368,4 @@ func (h *Handlers) ExpenseDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-}
-
-// redirectSafe redirects to a URL, ensuring it's a relative path
-// nolint:unused
-func redirectSafe(w http.ResponseWriter, r *http.Request, rawURL string) {
-	u, err := url.Parse(rawURL)
-	if err != nil || u.Host != "" {
-		http.Redirect(w, r, "/expenses", http.StatusSeeOther)
-		return
-	}
-
-	http.Redirect(w, r, u.String(), http.StatusSeeOther)
 }

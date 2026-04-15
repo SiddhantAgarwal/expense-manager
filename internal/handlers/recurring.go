@@ -63,18 +63,44 @@ func (h *Handlers) RecurringCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	currency := r.FormValue("currency")
-	category := r.FormValue("category")
-	description := r.FormValue("description")
-	frequency := r.FormValue("frequency")
-	startDate := r.FormValue("start_date")
-
-	if startDate == "" {
-		startDate = time.Now().Format("2006-01-02")
+	if !validCurrency(currency) {
+		http.Error(w, "invalid currency", http.StatusBadRequest)
+		return
 	}
 
-	dayOfMonth, _ := strconv.Atoi(r.FormValue("day_of_month"))
-	if dayOfMonth <= 0 {
-		// Default to the day from the start date
+	category := r.FormValue("category")
+	if category == "" {
+		http.Error(w, "category is required", http.StatusBadRequest)
+		return
+	}
+
+	description := r.FormValue("description")
+
+	frequency := r.FormValue("frequency")
+	if !validFrequency(frequency) {
+		http.Error(w, "invalid frequency", http.StatusBadRequest)
+		return
+	}
+
+	startDate := r.FormValue("start_date")
+	if startDate == "" {
+		startDate = time.Now().Format("2006-01-02")
+	} else if !validDate(startDate) {
+		http.Error(w, "invalid start date", http.StatusBadRequest)
+		return
+	}
+
+	dayOfMonthStr := r.FormValue("day_of_month")
+	dayOfMonth := 0
+	if dayOfMonthStr != "" {
+		dayOfMonth, err = strconv.Atoi(dayOfMonthStr)
+		if err != nil || dayOfMonth < 1 || dayOfMonth > 31 {
+			http.Error(w, "day of month must be 1-31", http.StatusBadRequest)
+			return
+		}
+	}
+
+	if dayOfMonth == 0 {
 		t, _ := time.Parse("2006-01-02", startDate)
 		dayOfMonth = t.Day()
 	}
