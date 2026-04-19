@@ -62,6 +62,7 @@ func main() {
 	protected.Use(middleware.AuthMiddleware(au))
 	protected.HandleFunc("/dashboard", h.Dashboard).Methods("GET")
 	protected.HandleFunc("/expenses", h.ExpenseList).Methods("GET")
+	protected.HandleFunc("/expenses/export", h.ExpenseExportCSV).Methods("GET")
 	protected.HandleFunc("/expenses/new", h.ExpenseNew).Methods("GET")
 	protected.HandleFunc("/expenses", h.ExpenseCreate).Methods("POST")
 	protected.HandleFunc("/expenses/{id}", h.ExpenseUpdate).Methods("PUT")
