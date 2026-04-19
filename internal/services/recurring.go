@@ -72,7 +72,6 @@ func (rp *RecurringProcessor) processUser(username, today string) {
 		}
 
 		// Auto-create expense linked to this recurring parent
-		parentID := re.ID
 		expense := models.Expense{
 			ID:                NewID(),
 			Amount:            re.Amount,
@@ -82,7 +81,7 @@ func (rp *RecurringProcessor) processUser(username, today string) {
 			Description:       re.Description,
 			Date:              re.NextDate,
 			IsRecurring:       true,
-			RecurringParentID: &parentID,
+			RecurringParentID: new(re.ID),
 			CreatedAt:         time.Now(),
 		}
 
