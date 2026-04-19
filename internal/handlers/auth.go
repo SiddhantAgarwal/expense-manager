@@ -41,7 +41,7 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := h.auth.CreateSession(username)
+	token := h.auth.Store.Create(username)
 	auth.SetSessionCookie(w, token)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
@@ -122,7 +122,7 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := h.auth.CreateSession(username)
+	token := h.auth.Store.Create(username)
 	auth.SetSessionCookie(w, token)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
@@ -130,7 +130,7 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) Logout(w http.ResponseWriter, r *http.Request) {
 	token := auth.GetSessionToken(r)
 	if token != "" {
-		h.auth.DeleteSession(token)
+		h.auth.Store.Delete(token)
 	}
 
 	auth.ClearSessionCookie(w)

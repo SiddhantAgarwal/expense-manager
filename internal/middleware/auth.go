@@ -29,7 +29,7 @@ func AuthMiddleware(a *auth.Auth) func(http.Handler) http.Handler {
 				return
 			}
 
-			session, ok := a.GetSession(token)
+			session, ok := a.Store.Get(token)
 			if !ok {
 				http.Redirect(w, r, "/login", http.StatusSeeOther)
 				return
