@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/csv"
+	"fmt"
 	"log"
 	"net/http"
 	"sort"
@@ -368,4 +370,60 @@ func (h *Handlers) ExpenseDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (h *Handlers) ExpenseExportCSV(w http.ResponseWriter, r *http.Request) {
+	username, _ := middleware.FromContext(r.Context())
+
+	ud, err := h.store.LoadUserData(username)
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	users, err := h.store.LoadUsers()
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	user := users[username]
+
+	from := r.URL.Query().Get("from")
+	to := r.URL.Query().Get("to")
+	category := r.URL.Query().Get("category")
+
+	filtered := filterExpenses(ud.Expenses, from, to, category)
+
+	sort.Slice(filtered, func(i, j int) bool {
+		return filtered[i].Date > filtered[j].Date
+	})
+
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", "attachment; filename=expenses.csv")
+
+	cw := csv.NewWriter(w)
+	defer cw.Flush()
+
+	header := []string{"Date", "Category", "Description", "Amount", "Currency", fmt.Sprintf("Amount in %s", user.DefaultCurrency)}
+
+	err = cw.Write(header)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	for _, e := range filtered {
+		err = cw.Write([]string{
+			e.Date,
+			e.Category,
+			e.Description,
+			fmt.Sprintf("%.2f", e.Amount),
+			e.Currency,
+			fmt.Sprintf("%.2f", e.AmountBase),
+		})
+		if err != nil {
+			log.Println(err)
+		}
+	}
 }
