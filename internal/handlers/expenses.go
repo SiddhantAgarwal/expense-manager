@@ -23,6 +23,7 @@ type expenseListData struct {
 	Expenses        []models.Expense
 	Categories      []string
 	DefaultCurrency string
+	NumberFormat    string
 	FilterFrom      string
 	FilterTo        string
 	FilterCategory  string
@@ -60,6 +61,7 @@ func (h *Handlers) ExpenseList(w http.ResponseWriter, r *http.Request) {
 		Expenses:        filtered,
 		Categories:      ud.Categories,
 		DefaultCurrency: user.DefaultCurrency,
+		NumberFormat:    user.NumberFormat,
 		FilterFrom:      from,
 		FilterTo:        to,
 		FilterCategory:  category,
@@ -99,6 +101,7 @@ type expenseFormData struct {
 	Categories      []string
 	Currencies      []string
 	DefaultCurrency string
+	NumberFormat    string
 	Today           string
 }
 
@@ -123,6 +126,7 @@ func (h *Handlers) ExpenseNew(w http.ResponseWriter, r *http.Request) {
 		Categories:      ud.Categories,
 		Currencies:      currencies,
 		DefaultCurrency: users[username].DefaultCurrency,
+		NumberFormat:    users[username].NumberFormat,
 		Today:           time.Now().Format("2006-01-02"),
 	}
 
@@ -240,12 +244,14 @@ func (h *Handlers) ExpenseEdit(w http.ResponseWriter, r *http.Request) {
 		Categories      []string
 		Currencies      []string
 		DefaultCurrency string
+		NumberFormat    string
 	}{
 		Username:        username,
 		Expense:         expense,
 		Categories:      ud.Categories,
 		Currencies:      currencies,
 		DefaultCurrency: users[username].DefaultCurrency,
+		NumberFormat:    users[username].NumberFormat,
 	}
 
 	if err := h.templates["expense_edit_partial"].ExecuteTemplate(w, "expense_edit_partial", data); err != nil {

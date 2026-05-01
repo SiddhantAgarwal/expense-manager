@@ -16,6 +16,8 @@ import (
 type settingsData struct {
 	Username        string
 	DefaultCurrency string
+	NumberFormat    string
+	NumberFormats   []numberFormatOption
 	ExchangeRates   map[string]float64
 	SortedRates     []exchangeRateEntry
 	Currencies      []string
@@ -27,6 +29,12 @@ type settingsData struct {
 type exchangeRateEntry struct {
 	Currency string
 	Rate     float64
+}
+
+type numberFormatOption struct {
+	Value      string
+	Label      string
+	IsSelected bool
 }
 
 func (h *Handlers) SettingsPage(w http.ResponseWriter, r *http.Request) {
@@ -56,9 +64,25 @@ func (h *Handlers) SettingsPage(w http.ResponseWriter, r *http.Request) {
 		return sortedRates[i].Currency < sortedRates[j].Currency
 	})
 
+	currentFormat := user.NumberFormat
+	if currentFormat == "" {
+		currentFormat = "us"
+	}
+
+	allFormats := []numberFormatOption{
+		{Value: "us", Label: "US (1,234,567.89)"},
+		{Value: "indian", Label: "Indian (12,34,567.89)"},
+		{Value: "european", Label: "European (1.234.567,89)"},
+	}
+	for i := range allFormats {
+		allFormats[i].IsSelected = allFormats[i].Value == currentFormat
+	}
+
 	data := settingsData{
 		Username:        username,
 		DefaultCurrency: user.DefaultCurrency,
+		NumberFormat:    user.NumberFormat,
+		NumberFormats:   allFormats,
 		ExchangeRates:   user.ExchangeRates,
 		SortedRates:     sortedRates,
 		Currencies:      currencies,
@@ -79,6 +103,8 @@ func (h *Handlers) SettingsUpdate(w http.ResponseWriter, r *http.Request) {
 	switch action {
 	case "currency":
 		h.updateCurrency(w, r, username)
+	case "number_format":
+		h.updateNumberFormat(w, r, username)
 	case "exchange_rate":
 		h.addExchangeRate(w, r, username)
 	case "add_category":
@@ -123,6 +149,31 @@ func (h *Handlers) updateCurrency(w http.ResponseWriter, r *http.Request, userna
 	}
 
 	http.Redirect(w, r, "/settings?success=currency", http.StatusSeeOther)
+}
+
+func (h *Handlers) updateNumberFormat(w http.ResponseWriter, r *http.Request, username string) {
+	format := r.FormValue("number_format")
+	if !validNumberFormat(format) {
+		http.Redirect(w, r, "/settings?error=invalid_number_format", http.StatusSeeOther)
+		return
+	}
+
+	users, err := h.store.LoadUsers()
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	user := users[username]
+	user.NumberFormat = format
+	users[username] = user
+
+	if err := h.store.SaveUsers(users); err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/settings?success=number_format", http.StatusSeeOther)
 }
 
 func (h *Handlers) addExchangeRate(w http.ResponseWriter, r *http.Request, username string) {

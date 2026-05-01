@@ -47,6 +47,7 @@ func (h *Handlers) Dashboard(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Username        string
 		DefaultCurrency string
+		NumberFormat    string
 		MonthlyTotal    float64
 		RecentExpenses  []models.Expense
 		BudgetStatuses  []services.BudgetStatus
@@ -55,6 +56,7 @@ func (h *Handlers) Dashboard(w http.ResponseWriter, r *http.Request) {
 	}{
 		Username:        username,
 		DefaultCurrency: user.DefaultCurrency,
+		NumberFormat:    user.NumberFormat,
 		MonthlyTotal:    monthlyTotal,
 		RecentExpenses:  recent,
 		BudgetStatuses:  budgetStatuses,

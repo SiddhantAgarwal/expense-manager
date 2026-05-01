@@ -24,7 +24,7 @@
 <div class="dashboard-grid">
   <div class="card stat-card">
     <div class="stat-label">Total Spent</div>
-    <div class="stat-value">{{printf "%.2f" .TotalSpent}} {{.DefaultCurrency}}</div>
+    <div class="stat-value">{{formatAmount .TotalSpent .NumberFormat}} {{.DefaultCurrency}}</div>
     <div class="stat-sub">{{len .CategoryBreakdowns}} categor{{if eq (len .CategoryBreakdowns) 1}}y{{else}}ies{{end}}</div>
   </div>
 </div>
@@ -48,7 +48,7 @@
       {{range .CategoryBreakdowns}}
       <tr>
         <td><span class="badge">{{.Category}}</span></td>
-        <td>{{printf "%.2f" .Total}} {{$.DefaultCurrency}}</td>
+        <td>{{formatAmount .Total $.NumberFormat}} {{$.DefaultCurrency}}</td>
         <td>
           <div style="display:flex;align-items:center;gap:0.5rem;">
             <div class="progress-bar" style="width:100px;">
@@ -65,6 +65,55 @@
 </section>
 <script>
 (function() {
+  var numberFormat = {{.NumberFormat | printf "%q"}};
+
+  function formatNumber(value) {
+    var s = value.toFixed(2);
+    var parts = s.split('.');
+    var integerPart = parts[0];
+    var decimalPart = parts[1];
+    var neg = '';
+    if (integerPart[0] === '-') {
+      neg = '-';
+      integerPart = integerPart.slice(1);
+    }
+    var formatted;
+    switch(numberFormat) {
+      case 'indian':
+        formatted = formatIndian(integerPart);
+        break;
+      case 'european':
+        formatted = formatEuropean(integerPart);
+        break;
+      default:
+        formatted = formatUS(integerPart);
+    }
+    if (numberFormat === 'european') {
+      return neg + formatted + ',' + decimalPart;
+    }
+    return neg + formatted + '.' + decimalPart;
+  }
+
+  function formatUS(integer) {
+    return integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function formatIndian(integer) {
+    if (integer.length <= 3) return integer;
+    var result = integer.slice(-3);
+    var rest = integer.slice(0, -3);
+    while (rest.length > 2) {
+      result = rest.slice(-2) + ',' + result;
+      rest = rest.slice(0, -2);
+    }
+    if (rest.length > 0) result = rest + ',' + result;
+    return result;
+  }
+
+  function formatEuropean(integer) {
+    return integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
   var categories = {{.CategoryBreakdownsJSON}};
   var labels = categories.map(function(c) { return c.Category; });
   var data = categories.map(function(c) { return c.Total; });
@@ -98,7 +147,7 @@
             label: function(ctx) {
               var total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
               var pct = ((ctx.parsed / total) * 100).toFixed(1);
-              return ctx.label + ': ' + ctx.parsed.toFixed(2) + ' ({{.DefaultCurrency}}, ' + pct + '%)';
+              return ctx.label + ': ' + formatNumber(ctx.parsed) + ' ({{.DefaultCurrency}}, ' + pct + '%)';
             }
           }
         }
@@ -124,7 +173,7 @@
       {{range .MonthlyTotals}}
       <tr>
         <td>{{.Month}}</td>
-        <td>{{printf "%.2f" .Total}} {{$.DefaultCurrency}}</td>
+        <td>{{formatAmount .Total $.NumberFormat}} {{$.DefaultCurrency}}</td>
         <td>{{.Count}}</td>
       </tr>
       {{end}}

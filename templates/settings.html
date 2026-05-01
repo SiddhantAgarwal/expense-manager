@@ -8,11 +8,11 @@
 </div>
 
 {{if .Error}}
-<div class="alert alert-error">{{if eq .Error "invalid_rate"}}Invalid exchange rate. Must be a positive number.{{else if eq .Error "invalid_currency"}}Invalid currency selected.{{else if eq .Error "empty_category"}}Category name cannot be empty.{{else if eq .Error "duplicate_category"}}Category already exists.{{else if eq .Error "category_in_use"}}Cannot delete a category that has expenses.{{else if eq .Error "wrong_password"}}Current password is incorrect.{{else if eq .Error "short_password"}}New password must be at least 6 characters.{{else if eq .Error "password_mismatch"}}New passwords do not match.{{else}}{{.Error}}{{end}}</div>
+<div class="alert alert-error">{{if eq .Error "invalid_rate"}}Invalid exchange rate. Must be a positive number.{{else if eq .Error "invalid_currency"}}Invalid currency selected.{{else if eq .Error "invalid_number_format"}}Invalid number format selected.{{else if eq .Error "empty_category"}}Category name cannot be empty.{{else if eq .Error "duplicate_category"}}Category already exists.{{else if eq .Error "category_in_use"}}Cannot delete a category that has expenses.{{else if eq .Error "wrong_password"}}Current password is incorrect.{{else if eq .Error "short_password"}}New password must be at least 6 characters.{{else if eq .Error "password_mismatch"}}New passwords do not match.{{else}}{{.Error}}{{end}}</div>
 {{end}}
 
 {{if .Success}}
-<div class="alert alert-success">{{if eq .Success "currency"}}Default currency updated.{{else if eq .Success "rate"}}Exchange rate saved.{{else if eq .Success "rate_deleted"}}Exchange rate removed.{{else if eq .Success "category"}}Category added.{{else if eq .Success "category_deleted"}}Category removed.{{else if eq .Success "password"}}Password changed successfully.{{else}}{{.Success}}{{end}}</div>
+<div class="alert alert-success">{{if eq .Success "currency"}}Default currency updated.{{else if eq .Success "number_format"}}Number format updated.{{else if eq .Success "rate"}}Exchange rate saved.{{else if eq .Success "rate_deleted"}}Exchange rate removed.{{else if eq .Success "category"}}Category added.{{else if eq .Success "category_deleted"}}Category removed.{{else if eq .Success "password"}}Password changed successfully.{{else}}{{.Success}}{{end}}</div>
 {{end}}
 
 <section class="section">
@@ -25,6 +25,26 @@
         <select id="default_currency" name="default_currency">
           {{range .Currencies}}
           <option value="{{.}}" {{if eq $.DefaultCurrency .}}selected{{end}}>{{.}}</option>
+          {{end}}
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" style="width:auto">Save</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Number Format</h2>
+  <div class="card">
+    <form action="/settings" method="POST">
+      <input type="hidden" name="action" value="number_format">
+      <div class="form-group">
+        <label for="number_format">How should amounts be displayed?</label>
+        <select id="number_format" name="number_format">
+          {{range .NumberFormats}}
+          <option value="{{.Value}}" {{if .IsSelected}}selected{{end}}>{{.Label}}</option>
           {{end}}
         </select>
       </div>

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/siddhantagarwal/expense-manager/internal/auth"
+	"github.com/siddhantagarwal/expense-manager/internal/services"
 	"github.com/siddhantagarwal/expense-manager/internal/store"
 )
 
@@ -15,6 +16,11 @@ type Handlers struct {
 }
 
 func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
+	funcMap := template.FuncMap{
+		"formatAmount":      services.FormatAmount,
+		"formatAmountInput": services.FormatAmountInput,
+	}
+
 	// Each page template defines the same block names ("title", "content").
 	// ParseGlob would load them into one set and the last definition wins,
 	// causing every page to render the same content. Instead, parse each
@@ -26,7 +32,7 @@ func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
 	templates := make(map[string]*template.Template)
 
 	for _, page := range pageTemplates {
-		t, err := template.ParseFiles(
+		t, err := template.New("").Funcs(funcMap).ParseFiles(
 			tmplDir+"/base.html",
 			tmplDir+"/"+page+".html",
 		)
@@ -38,14 +44,14 @@ func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
 	}
 
 	// Partial templates that don't extend base.html
-	t, err := template.ParseFiles(tmplDir + "/expense_edit_partial.html")
+	t, err := template.New("").Funcs(funcMap).ParseFiles(tmplDir + "/expense_edit_partial.html")
 	if err != nil {
 		return nil, err
 	}
 
 	templates["expense_edit_partial"] = t
 
-	t, err = template.ParseFiles(tmplDir + "/error.html")
+	t, err = template.New("").Funcs(funcMap).ParseFiles(tmplDir + "/error.html")
 	if err != nil {
 		return nil, err
 	}

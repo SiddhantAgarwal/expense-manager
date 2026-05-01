@@ -13,6 +13,7 @@ import (
 type reportListData struct {
 	Username               string
 	DefaultCurrency        string
+	NumberFormat           string
 	CategoryBreakdowns     []services.CategoryBreakdown
 	CategoryBreakdownsJSON template.JS
 	MonthlyTotals          []services.MonthSummary
@@ -51,6 +52,7 @@ func (h *Handlers) ReportList(w http.ResponseWriter, r *http.Request) {
 	data := reportListData{
 		Username:               username,
 		DefaultCurrency:        user.DefaultCurrency,
+		NumberFormat:           user.NumberFormat,
 		CategoryBreakdowns:     categoryBreakdowns,
 		CategoryBreakdownsJSON: template.JS(categoryJSON),
 		MonthlyTotals:          monthlyTotals,

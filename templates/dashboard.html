@@ -11,7 +11,7 @@
 <div class="dashboard-grid">
   <div class="card stat-card">
     <div class="stat-label">This Month</div>
-    <div class="stat-value">{{printf "%.2f" .MonthlyTotal}} {{.DefaultCurrency}}</div>
+    <div class="stat-value">{{formatAmount .MonthlyTotal .NumberFormat}} {{.DefaultCurrency}}</div>
     <div class="stat-sub">{{len .RecentExpenses}} expense{{if ne (len .RecentExpenses) 1}}s{{end}}</div>
   </div>
 
@@ -29,7 +29,7 @@
     <div class="budget-item">
       <div class="budget-header">
         <span class="badge">{{.Category}}</span>
-        <span>{{printf "%.2f" .Spent}} / {{printf "%.2f" .Limit}} {{$.DefaultCurrency}}</span>
+        <span>{{formatAmount .Spent $.NumberFormat}} / {{formatAmount .Limit $.NumberFormat}} {{$.DefaultCurrency}}</span>
       </div>
       <div class="progress-bar">
         <div class="progress-fill {{if .OverBudget}}progress-danger{{else if .Alert}}progress-warning{{else}}progress-ok{{end}}"
@@ -37,13 +37,13 @@
       </div>
       <div class="budget-footer">
         {{if .OverBudget}}
-        <span class="text-danger">Over budget by {{printf "%.2f" .OverAmount}} {{$.DefaultCurrency}}</span>
+        <span class="text-danger">Over budget by {{formatAmount .OverAmount $.NumberFormat}} {{$.DefaultCurrency}}</span>
         {{else if .Alert}}
         <span class="text-warning">{{printf "%.0f" .Percent}}% of budget used</span>
         {{else}}
         <span class="text-muted">{{printf "%.0f" .Percent}}% used</span>
         {{end}}
-        <span class="text-muted">{{printf "%.2f" .Remaining}} remaining</span>
+        <span class="text-muted">{{formatAmount .Remaining $.NumberFormat}} remaining</span>
       </div>
     </div>
     {{end}}
@@ -69,7 +69,7 @@
         <td>{{.Date}}</td>
         <td><span class="badge">{{.Category}}</span></td>
         <td>{{.Description}}</td>
-        <td>{{printf "%.2f" .AmountBase}} {{$.DefaultCurrency}}</td>
+        <td>{{formatAmount .AmountBase $.NumberFormat}} {{$.DefaultCurrency}}</td>
       </tr>
       {{end}}
     </tbody>

@@ -7,6 +7,7 @@ type User struct {
 	PasswordHash    string             `json:"password_hash"`
 	DefaultCurrency string             `json:"default_currency"`
 	ExchangeRates   map[string]float64 `json:"exchange_rates"`
+	NumberFormat    string             `json:"number_format"`
 	CreatedAt       time.Time          `json:"created_at"`
 }
 
