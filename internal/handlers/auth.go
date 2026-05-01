@@ -103,6 +103,7 @@ func (h *Handlers) Signup(w http.ResponseWriter, r *http.Request) {
 		PasswordHash:    hash,
 		DefaultCurrency: currency,
 		ExchangeRates:   map[string]float64{},
+		NumberFormat:    "us",
 		CreatedAt:       time.Now(),
 	}
 

@@ -18,6 +18,7 @@ var frequencies = []string{"weekly", "monthly", "yearly"}
 type recurringListData struct {
 	Username          string
 	DefaultCurrency   string
+	NumberFormat      string
 	RecurringExpenses []models.RecurringExpense
 	Categories        []string
 	Currencies        []string
@@ -42,6 +43,7 @@ func (h *Handlers) RecurringList(w http.ResponseWriter, r *http.Request) {
 	data := recurringListData{
 		Username:          username,
 		DefaultCurrency:   users[username].DefaultCurrency,
+		NumberFormat:      users[username].NumberFormat,
 		RecurringExpenses: ud.RecurringExpenses,
 		Categories:        ud.Categories,
 		Currencies:        currencies,

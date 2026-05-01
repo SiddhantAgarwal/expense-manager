@@ -16,6 +16,7 @@ import (
 type budgetListData struct {
 	Username        string
 	DefaultCurrency string
+	NumberFormat    string
 	Budgets         []models.Budget
 	BudgetStatuses  []services.BudgetStatus
 	Categories      []string
@@ -43,6 +44,7 @@ func (h *Handlers) BudgetList(w http.ResponseWriter, r *http.Request) {
 	data := budgetListData{
 		Username:        username,
 		DefaultCurrency: user.DefaultCurrency,
+		NumberFormat:    user.NumberFormat,
 		Budgets:         ud.Budgets,
 		BudgetStatuses:  budgetStatuses,
 		Categories:      ud.Categories,

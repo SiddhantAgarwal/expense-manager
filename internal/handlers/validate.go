@@ -30,6 +30,18 @@ func validDate(date string) bool {
 	return err == nil
 }
 
+var numberFormats = []string{"us", "indian", "european"}
+
+func validNumberFormat(format string) bool {
+	for _, f := range numberFormats {
+		if f == format {
+			return true
+		}
+	}
+
+	return false
+}
+
 var usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_]{3,50}$`)
 
 func validUsername(username string) bool {

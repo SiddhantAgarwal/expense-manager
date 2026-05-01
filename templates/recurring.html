@@ -27,7 +27,7 @@
       <tr>
         <td>{{.Description}}</td>
         <td><span class="badge">{{.Category}}</span></td>
-        <td>{{printf "%.2f" .Amount}} {{.Currency}}</td>
+        <td>{{formatAmount .Amount $.NumberFormat}} {{.Currency}}</td>
         <td>{{.Frequency}}</td>
         <td>{{.NextDate}}</td>
         <td>

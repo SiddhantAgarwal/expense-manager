@@ -51,8 +51,8 @@
       <td>{{.Date}}</td>
       <td><span class="badge">{{.Category}}</span></td>
       <td>{{.Description}}</td>
-      <td>{{printf "%.2f" .Amount}} {{.Currency}}</td>
-      <td>{{printf "%.2f" .AmountBase}}</td>
+      <td>{{formatAmount .Amount $.NumberFormat}} {{.Currency}}</td>
+      <td>{{formatAmount .AmountBase $.NumberFormat}}</td>
       <td class="actions">
         <button class="btn btn-ghost btn-sm"
           hx-get="/expenses/{{.ID}}/edit"

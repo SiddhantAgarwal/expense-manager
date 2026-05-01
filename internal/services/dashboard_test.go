@@ -8,8 +8,6 @@ import (
 )
 
 func TestComputeBudgetStatuses(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name            string
 		expenses        []models.Expense
@@ -124,8 +122,6 @@ func TestComputeBudgetStatuses(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			got := ComputeBudgetStatuses(tt.expenses, tt.budgets, tt.defaultCurrency)
 			if len(got) != len(tt.want) {
 				t.Errorf("ComputeBudgetStatuses() returned %d statuses, want %d", len(got), len(tt.want))
@@ -170,8 +166,6 @@ func TestComputeBudgetStatuses(t *testing.T) {
 }
 
 func TestRecentExpenses(t *testing.T) {
-	t.Parallel()
-
 	allExpenses := []models.Expense{
 		{ID: "1", Description: "first", Date: "2026-04-01"},
 		{ID: "2", Description: "second", Date: "2026-04-10"},
@@ -232,8 +226,6 @@ func TestRecentExpenses(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			got := RecentExpenses(tt.expenses, tt.n)
 			if len(got) != len(tt.want) {
 				t.Errorf("RecentExpenses() returned %d items, want %d", len(got), len(tt.want))
@@ -250,12 +242,9 @@ func TestRecentExpenses(t *testing.T) {
 }
 
 func TestMonthlyTotal(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name     string
 		expenses []models.Expense
-		setup    func()
 		want     float64
 	}{
 		{
@@ -319,8 +308,6 @@ func TestMonthlyTotal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-
 			got := MonthlyTotal(tt.expenses)
 			if math.Abs(got-tt.want) > 0.0001 {
 				t.Errorf("MonthlyTotal() = %v, want %v", got, tt.want)
