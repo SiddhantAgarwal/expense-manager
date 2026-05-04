@@ -127,7 +127,7 @@
     <tbody>
       {{range .Categories}}
       <tr>
-        <td>{{.}}</td>
+        <td><span class="badge"><svg class="category-icon"><use href="#{{categoryIconID . $.CategoryIcons}}"></use></svg>{{.}}</span></td>
         <td>
           <button class="btn btn-sm btn-danger"
             hx-delete="/settings/categories/{{.}}"
@@ -150,6 +150,17 @@
       <div class="form-group">
         <label for="category">Category name</label>
         <input type="text" id="category" name="category" required placeholder="e.g. Education">
+      </div>
+      <div class="form-group">
+        <label>Icon</label>
+        <div class="icon-picker" id="icon-picker">
+          {{range .AvailableIcons}}
+          <button type="button" class="icon-picker-item" data-icon="{{.ID}}" title="{{.Label}}">
+            <svg class="category-icon"><use href="#{{.ID}}"></use></svg>
+          </button>
+          {{end}}
+        </div>
+        <input type="hidden" id="icon_id" name="icon_id" value="">
       </div>
       <div class="form-actions">
         <button type="submit" class="btn btn-primary" style="width:auto">Add Category</button>
@@ -183,4 +194,13 @@
     </form>
   </div>
 </section>
+<script>
+document.getElementById('icon-picker').addEventListener('click', function(e) {
+  var btn = e.target.closest('.icon-picker-item');
+  if (!btn) return;
+  this.querySelectorAll('.icon-picker-item').forEach(function(b) { b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  document.getElementById('icon_id').value = btn.dataset.icon;
+});
+</script>
 {{end}}

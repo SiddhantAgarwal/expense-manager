@@ -21,6 +21,7 @@ type recurringListData struct {
 	NumberFormat      string
 	RecurringExpenses []models.RecurringExpense
 	Categories        []string
+	CategoryIcons     map[string]string
 	Currencies        []string
 	Frequencies       []string
 }
@@ -46,6 +47,7 @@ func (h *Handlers) RecurringList(w http.ResponseWriter, r *http.Request) {
 		NumberFormat:      users[username].NumberFormat,
 		RecurringExpenses: ud.RecurringExpenses,
 		Categories:        ud.Categories,
+		CategoryIcons:     ud.CategoryIcons,
 		Currencies:        currencies,
 		Frequencies:       frequencies,
 	}

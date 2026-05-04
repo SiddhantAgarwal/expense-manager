@@ -48,7 +48,7 @@
     <tbody>
       {{range .CategoryBreakdowns}}
       <tr>
-        <td><span class="badge"><svg class="category-icon"><use href="#{{categoryIconID .Category}}"></use></svg>{{.Category}}</span></td>
+        <td><span class="badge"><svg class="category-icon"><use href="#{{categoryIconID .Category $.CategoryIcons}}"></use></svg>{{.Category}}</span></td>
         <td>{{formatAmount .Total $.NumberFormat}} {{$.DefaultCurrency}}</td>
         <td>
           <div style="display:flex;align-items:center;gap:0.5rem;">

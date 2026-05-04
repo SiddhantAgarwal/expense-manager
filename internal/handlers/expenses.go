@@ -22,6 +22,7 @@ type expenseListData struct {
 	Username        string
 	Expenses        []models.Expense
 	Categories      []string
+	CategoryIcons   map[string]string
 	DefaultCurrency string
 	NumberFormat    string
 	FilterFrom      string
@@ -60,6 +61,7 @@ func (h *Handlers) ExpenseList(w http.ResponseWriter, r *http.Request) {
 		Username:        username,
 		Expenses:        filtered,
 		Categories:      ud.Categories,
+		CategoryIcons:   ud.CategoryIcons,
 		DefaultCurrency: user.DefaultCurrency,
 		NumberFormat:    user.NumberFormat,
 		FilterFrom:      from,

@@ -20,6 +20,7 @@ type budgetListData struct {
 	Budgets         []models.Budget
 	BudgetStatuses  []services.BudgetStatus
 	Categories      []string
+	CategoryIcons   map[string]string
 	Currencies      []string
 }
 
@@ -48,6 +49,7 @@ func (h *Handlers) BudgetList(w http.ResponseWriter, r *http.Request) {
 		Budgets:         ud.Budgets,
 		BudgetStatuses:  budgetStatuses,
 		Categories:      ud.Categories,
+		CategoryIcons:   ud.CategoryIcons,
 		Currencies:      currencies,
 	}
 

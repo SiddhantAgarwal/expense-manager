@@ -14,7 +14,7 @@
     {{range .BudgetStatuses}}
     <div class="budget-item" id="budget-{{.Category}}">
       <div class="budget-header">
-        <span class="badge"><svg class="category-icon"><use href="#{{categoryIconID .Category}}"></use></svg>{{.Category}}</span>
+        <span class="badge"><svg class="category-icon"><use href="#{{categoryIconID .Category $.CategoryIcons}}"></use></svg>{{.Category}}</span>
         <span>{{formatAmount .Spent $.NumberFormat}} / {{formatAmount .Limit $.NumberFormat}} {{$.DefaultCurrency}}</span>
       </div>
       <div class="progress-bar">
@@ -52,7 +52,7 @@
     <tbody>
       {{range .Budgets}}
       <tr>
-        <td><span class="badge"><svg class="category-icon"><use href="#{{categoryIconID .Category}}"></use></svg>{{.Category}}</span></td>
+        <td><span class="badge"><svg class="category-icon"><use href="#{{categoryIconID .Category $.CategoryIcons}}"></use></svg>{{.Category}}</span></td>
         <td>{{formatAmount .MonthlyLimit $.NumberFormat}}</td>
         <td>{{.Currency}}</td>
         <td class="actions">
