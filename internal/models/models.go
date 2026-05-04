@@ -50,4 +50,5 @@ type UserData struct {
 	Budgets           []Budget           `json:"budgets"`
 	RecurringExpenses []RecurringExpense `json:"recurring_expenses"`
 	Categories        []string           `json:"categories"`
+	CategoryIcons     map[string]string  `json:"category_icons,omitempty"`
 }

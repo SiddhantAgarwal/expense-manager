@@ -53,6 +53,7 @@ func (h *Handlers) Dashboard(w http.ResponseWriter, r *http.Request) {
 		BudgetStatuses  []services.BudgetStatus
 		BudgetsOnTrack  int
 		TotalBudgets    int
+		CategoryIcons   map[string]string
 	}{
 		Username:        username,
 		DefaultCurrency: user.DefaultCurrency,
@@ -62,6 +63,7 @@ func (h *Handlers) Dashboard(w http.ResponseWriter, r *http.Request) {
 		BudgetStatuses:  budgetStatuses,
 		BudgetsOnTrack:  budgetsOnTrack,
 		TotalBudgets:    len(ud.Budgets),
+		CategoryIcons:   ud.CategoryIcons,
 	}
 
 	if err := h.templates["dashboard"].ExecuteTemplate(w, "dashboard.html", data); err != nil {

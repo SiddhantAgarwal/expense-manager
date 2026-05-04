@@ -11,6 +11,7 @@ import (
 
 	"github.com/siddhantagarwal/expense-manager/internal/auth"
 	"github.com/siddhantagarwal/expense-manager/internal/middleware"
+	"github.com/siddhantagarwal/expense-manager/internal/services"
 )
 
 type settingsData struct {
@@ -22,6 +23,8 @@ type settingsData struct {
 	SortedRates     []exchangeRateEntry
 	Currencies      []string
 	Categories      []string
+	CategoryIcons   map[string]string
+	AvailableIcons  []services.IconOption
 	Error           string
 	Success         string
 }
@@ -87,6 +90,8 @@ func (h *Handlers) SettingsPage(w http.ResponseWriter, r *http.Request) {
 		SortedRates:     sortedRates,
 		Currencies:      currencies,
 		Categories:      ud.Categories,
+		CategoryIcons:   ud.CategoryIcons,
+		AvailableIcons:  services.AvailableIcons,
 		Error:           r.URL.Query().Get("error"),
 		Success:         r.URL.Query().Get("success"),
 	}
@@ -255,6 +260,15 @@ func (h *Handlers) addCategory(w http.ResponseWriter, r *http.Request, username 
 
 	ud.Categories = append(ud.Categories, category)
 
+	iconID := r.FormValue("icon_id")
+	if iconID != "" && services.IsValidIconID(iconID) {
+		if ud.CategoryIcons == nil {
+			ud.CategoryIcons = make(map[string]string)
+		}
+
+		ud.CategoryIcons[category] = iconID
+	}
+
 	if err := h.store.SaveUserData(username, ud); err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
@@ -287,6 +301,8 @@ func (h *Handlers) deleteCategory(w http.ResponseWriter, r *http.Request, userna
 			break
 		}
 	}
+
+	delete(ud.CategoryIcons, category)
 
 	if err := h.store.SaveUserData(username, ud); err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)

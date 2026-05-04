@@ -301,6 +301,53 @@ main {
   flex-shrink: 0;
 }
 
+/* Icon picker */
+.icon-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.icon-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.icon-picker-item .category-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-picker-item:hover {
+  border-color: var(--primary);
+  background: #eef2ff;
+}
+
+.icon-picker-item.selected {
+  border-color: var(--primary);
+  background: #eef2ff;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+[data-theme="dark"] .icon-picker-item:hover {
+  background: #312e81;
+}
+
+[data-theme="dark"] .icon-picker-item.selected {
+  background: #312e81;
+  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.25);
+}
+
 /* Card */
 .card {
   background: var(--surface);
