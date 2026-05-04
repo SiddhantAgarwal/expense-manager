@@ -16,6 +16,8 @@ type reportListData struct {
 	NumberFormat           string
 	CategoryBreakdowns     []services.CategoryBreakdown
 	CategoryBreakdownsJSON template.JS
+	CategoryIconIDs        []string
+	CategoryIconIDsJSON    template.JS
 	MonthlyTotals          []services.MonthSummary
 	TotalSpent             float64
 	FilterFrom             string
@@ -49,12 +51,21 @@ func (h *Handlers) ReportList(w http.ResponseWriter, r *http.Request) {
 
 	categoryJSON, _ := json.Marshal(categoryBreakdowns)
 
+	iconIDs := make([]string, len(categoryBreakdowns))
+	for i, cb := range categoryBreakdowns {
+		iconIDs[i] = services.CategoryIconID(cb.Category)
+	}
+
+	iconIDsJSON, _ := json.Marshal(iconIDs)
+
 	data := reportListData{
 		Username:               username,
 		DefaultCurrency:        user.DefaultCurrency,
 		NumberFormat:           user.NumberFormat,
 		CategoryBreakdowns:     categoryBreakdowns,
 		CategoryBreakdownsJSON: template.JS(categoryJSON),
+		CategoryIconIDs:        iconIDs,
+		CategoryIconIDsJSON:    template.JS(iconIDsJSON),
 		MonthlyTotals:          monthlyTotals,
 		TotalSpent:             totalSpent,
 		FilterFrom:             from,

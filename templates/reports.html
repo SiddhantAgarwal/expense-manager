@@ -35,6 +35,7 @@
   <div class="chart-container">
     <canvas id="categoryChart"></canvas>
   </div>
+  <div class="chart-legend" id="chartLegend"></div>
   <table class="table">
     <thead>
       <tr>
@@ -47,7 +48,7 @@
     <tbody>
       {{range .CategoryBreakdowns}}
       <tr>
-        <td><span class="badge">{{.Category}}</span></td>
+        <td><span class="badge"><svg class="category-icon"><use href="#{{categoryIconID .Category}}"></use></svg>{{.Category}}</span></td>
         <td>{{formatAmount .Total $.NumberFormat}} {{$.DefaultCurrency}}</td>
         <td>
           <div style="display:flex;align-items:center;gap:0.5rem;">
@@ -115,6 +116,7 @@
   }
 
   var categories = {{.CategoryBreakdownsJSON}};
+  var iconIDs = {{.CategoryIconIDsJSON}};
   var labels = categories.map(function(c) { return c.Category; });
   var data = categories.map(function(c) { return c.Total; });
   var colors = [
@@ -138,10 +140,7 @@
       maintainAspectRatio: true,
       cutout: '50%',
       plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { padding: 12, usePointStyle: true, font: { size: 12 } }
-        },
+        legend: { display: false },
         tooltip: {
           callbacks: {
             label: function(ctx) {
@@ -154,6 +153,17 @@
       }
     }
   });
+
+  // Custom legend with icons
+  var legendHtml = '';
+  for (var i = 0; i < categories.length; i++) {
+    legendHtml += '<div class="chart-legend-item">' +
+      '<span class="chart-legend-color" style="background:' + colors[i % colors.length] + '"></span>' +
+      '<svg class="category-icon"><use href="#' + iconIDs[i] + '"></use></svg>' +
+      '<span>' + categories[i].Category + '</span>' +
+      '</div>';
+  }
+  document.getElementById('chartLegend').innerHTML = legendHtml;
 })();
 </script>
 {{end}}

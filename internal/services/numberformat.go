@@ -14,6 +14,7 @@ func FormatAmount(amount float64, format string) string {
 
 	parts := strings.SplitN(s, ".", 2)
 	integerPart := parts[0]
+
 	decimalPart := ""
 	if len(parts) == 2 {
 		decimalPart = parts[1]
@@ -26,6 +27,7 @@ func FormatAmount(amount float64, format string) string {
 	}
 
 	var formatted string
+
 	switch format {
 	case "indian":
 		formatted = formatIndian(integerPart)
@@ -63,15 +65,19 @@ func formatIndian(integer string) string {
 	if len(integer) <= 3 {
 		return integer
 	}
+
 	result := integer[len(integer)-3:]
+
 	rest := integer[:len(integer)-3]
 	for len(rest) > 2 {
 		result = rest[len(rest)-2:] + "," + result
 		rest = rest[:len(rest)-2]
 	}
+
 	if len(rest) > 0 {
 		result = rest + "," + result
 	}
+
 	return result
 }
 
@@ -83,12 +89,15 @@ func groupDigits(integer string, groupSize int, sep string) string {
 	if len(integer) <= groupSize {
 		return integer
 	}
+
 	var result string
+
 	for i := len(integer); i > 0; i -= groupSize {
 		start := i - groupSize
 		if start < 0 {
 			start = 0
 		}
+
 		part := integer[start:i]
 		if result == "" {
 			result = part
@@ -96,5 +105,6 @@ func groupDigits(integer string, groupSize int, sep string) string {
 			result = part + sep + result
 		}
 	}
+
 	return result
 }

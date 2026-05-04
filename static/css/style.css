@@ -281,13 +281,24 @@ main {
 
 /* Badge */
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 0.15rem 0.5rem;
   background: #eef2ff;
   color: var(--primary);
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 500;
+  gap: 0.25rem;
+}
+
+.category-icon {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+  flex-shrink: 0;
 }
 
 /* Card */
@@ -557,6 +568,28 @@ main {
 .chart-container {
   width: 240px;
   margin: 0 auto 1.5rem;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.chart-legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
 }
 
 /* Table responsive wrapper */

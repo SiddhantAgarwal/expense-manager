@@ -19,6 +19,7 @@ func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
 	funcMap := template.FuncMap{
 		"formatAmount":      services.FormatAmount,
 		"formatAmountInput": services.FormatAmountInput,
+		"categoryIconID":    services.CategoryIconID,
 	}
 
 	// Each page template defines the same block names ("title", "content").
