@@ -1,4 +1,6 @@
-# Expense Manager
+# Expense Manager 
+[![Go Report Card](https://goreportcard.com/badge/github.com/siddhantagarwal/expense-manager)](https://goreportcard.com/report/github.com/siddhantagarwal/expense-manager)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A self-hosted, web-based expense tracker built with Go, HTMX, and flat-file JSON storage. Designed for multi-user local deployment with no external database dependencies.
 
