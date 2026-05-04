@@ -65,11 +65,13 @@ func TestFilterByDateRange(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			got := filterByDateRange(expenses, tt.from, tt.to)
 			if len(got) != len(tt.wantIDs) {
 				t.Errorf("filterByDateRange() returned %d items, want %d", len(got), len(tt.wantIDs))
 				return
 			}
+
 			for i := range got {
 				if got[i].ID != tt.wantIDs[i] {
 					t.Errorf("filterByDateRange()[%d].ID = %q, want %q", i, got[i].ID, tt.wantIDs[i])
@@ -147,21 +149,26 @@ func TestCategoryBreakdowns(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			got := CategoryBreakdowns(tt.expenses, tt.from, tt.to)
 			if len(got) != len(tt.want) {
 				t.Errorf("CategoryBreakdowns() returned %d items, want %d", len(got), len(tt.want))
 				return
 			}
+
 			for i := range got {
 				if got[i].Category != tt.want[i].Category {
 					t.Errorf("breakdown[%d].Category = %q, want %q", i, got[i].Category, tt.want[i].Category)
 				}
+
 				if math.Abs(got[i].Total-tt.want[i].Total) > 0.01 {
 					t.Errorf("breakdown[%d].Total = %v, want %v", i, got[i].Total, tt.want[i].Total)
 				}
+
 				if math.Abs(got[i].Percent-tt.want[i].Percent) > 0.01 {
 					t.Errorf("breakdown[%d].Percent = %v, want %v", i, got[i].Percent, tt.want[i].Percent)
 				}
+
 				if got[i].Count != tt.want[i].Count {
 					t.Errorf("breakdown[%d].Count = %d, want %d", i, got[i].Count, tt.want[i].Count)
 				}
@@ -242,18 +249,22 @@ func TestMonthlyTotals(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			got := MonthlyTotals(tt.expenses, tt.from, tt.to)
 			if len(got) != len(tt.want) {
 				t.Errorf("MonthlyTotals() returned %d items, want %d", len(got), len(tt.want))
 				return
 			}
+
 			for i := range got {
 				if got[i].Month != tt.want[i].Month {
 					t.Errorf("summary[%d].Month = %q, want %q", i, got[i].Month, tt.want[i].Month)
 				}
+
 				if math.Abs(got[i].Total-tt.want[i].Total) > 0.01 {
 					t.Errorf("summary[%d].Total = %v, want %v", i, got[i].Total, tt.want[i].Total)
 				}
+
 				if got[i].Count != tt.want[i].Count {
 					t.Errorf("summary[%d].Count = %d, want %d", i, got[i].Count, tt.want[i].Count)
 				}
@@ -342,6 +353,7 @@ func TestTotalSpent(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			got := TotalSpent(tt.expenses, tt.from, tt.to)
 			if math.Abs(got-tt.want) > 0.01 {
 				t.Errorf("TotalSpent() = %v, want %v", got, tt.want)
