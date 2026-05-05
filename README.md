@@ -19,6 +19,8 @@ go build -o expense-manager ./cmd/server
 ./expense-manager
 ```
 
+The binary is fully self-contained — templates and static assets are embedded, so you can deploy just the binary without the `templates/` or `static/` directories.
+
 The server starts on **http://localhost:8080** by default.
 
 ### Configuration
@@ -148,22 +150,24 @@ expense-manager/
 ├── cmd/server/main.go          # Entry point, router, graceful shutdown
 ├── internal/
 │   ├── auth/                   # Session management, password hashing
+│   ├── embedded/               # go:embed — templates & static bundled in binary
+│   │   ├── embed.go
+│   │   ├── templates/          # Go HTML templates
+│   │   └── static/             # CSS with dark mode support
 │   ├── handlers/               # HTTP handlers (one file per domain)
 │   │   ├── handlers.go         # Handlers struct, constructor, 404
 │   │   ├── auth.go             # Login, signup, logout
-│   │   ├── dashboard.go       # Dashboard handler
-│   │   ├── expenses.go        # Expense CRUD
+│   │   ├── dashboard.go        # Dashboard handler
+│   │   ├── expenses.go         # Expense CRUD
 │   │   ├── budgets.go          # Budget management
-│   │   ├── recurring.go       # Recurring expenses
-│   │   ├── reports.go         # Reports
-│   │   ├── settings.go        # Settings
+│   │   ├── recurring.go        # Recurring expenses
+│   │   ├── reports.go          # Reports
+│   │   ├── settings.go         # Settings
 │   │   └── validate.go         # Shared validation helpers
-│   ├── middleware/              # Auth middleware
+│   ├── middleware/             # Auth middleware
 │   ├── models/                 # Data structures (User, Expense, etc.)
 │   ├── services/               # Business logic (recurring, reports, currency)
 │   └── store/                  # JSON file read/write with mutex locking
-├── templates/                  # Go HTML templates
-├── static/css/style.css        # Custom CSS with dark mode support
 ├── data/                       # JSON storage (gitignored)
 │   ├── users.json              # All user accounts
 │   └── <username>.json         # Per-user data
@@ -214,7 +218,7 @@ The project uses `.golangci.yml` with the following linters: `gocyclo` (min comp
 go run ./cmd/server
 ```
 
-Changes to Go code require a restart. Template and CSS changes take effect on the next page load (no restart needed for templates, hard-refresh for CSS).
+Changes to Go code, templates, or CSS require a restart (`go run ./cmd/server` recompiles automatically).
 
 ---
 
