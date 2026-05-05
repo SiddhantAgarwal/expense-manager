@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/siddhantagarwal/expense-manager/internal/auth"
+	"github.com/siddhantagarwal/expense-manager/internal/embedded"
 	"github.com/siddhantagarwal/expense-manager/internal/handlers"
 	"github.com/siddhantagarwal/expense-manager/internal/middleware"
 	"github.com/siddhantagarwal/expense-manager/internal/services"
@@ -37,16 +39,21 @@ func main() {
 	st := store.New(dataDir)
 	au := auth.New()
 
-	h, err := handlers.New(st, au, "templates")
+	h, err := handlers.New(st, au, embedded.Templates)
 	if err != nil {
 		log.Fatalf("Failed to parse templates: %v", err)
 	}
 
 	r := mux.NewRouter()
 
-	// Static files
-	fs := http.FileServer(http.Dir("static"))
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
+	// Static files (embedded)
+	staticSub, err := fs.Sub(embedded.Static, "static")
+	if err != nil {
+		log.Fatalf("Failed to create static sub-filesystem: %v", err)
+	}
+
+	staticFS := http.FileServer(http.FS(staticSub))
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", staticFS))
 
 	// Public routes
 	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

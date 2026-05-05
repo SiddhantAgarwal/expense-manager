@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"fmt"
 	"html/template"
+	"io/fs"
 	"net/http"
 
 	"github.com/siddhantagarwal/expense-manager/internal/auth"
@@ -15,7 +17,12 @@ type Handlers struct {
 	templates map[string]*template.Template
 }
 
-func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
+func New(st *store.Store, au *auth.Auth, tmplFS fs.FS) (*Handlers, error) {
+	sub, err := fs.Sub(tmplFS, "templates")
+	if err != nil {
+		return nil, fmt.Errorf("create template sub-fs: %w", err)
+	}
+
 	funcMap := template.FuncMap{
 		"formatAmount":      services.FormatAmount,
 		"formatAmountInput": services.FormatAmountInput,
@@ -33,9 +40,9 @@ func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
 	templates := make(map[string]*template.Template)
 
 	for _, page := range pageTemplates {
-		t, err := template.New("").Funcs(funcMap).ParseFiles(
-			tmplDir+"/base.html",
-			tmplDir+"/"+page+".html",
+		t, err := template.New("").Funcs(funcMap).ParseFS(sub,
+			"base.html",
+			page+".html",
 		)
 		if err != nil {
 			return nil, err
@@ -45,14 +52,14 @@ func New(st *store.Store, au *auth.Auth, tmplDir string) (*Handlers, error) {
 	}
 
 	// Partial templates that don't extend base.html
-	t, err := template.New("").Funcs(funcMap).ParseFiles(tmplDir + "/expense_edit_partial.html")
+	t, err := template.New("").Funcs(funcMap).ParseFS(sub, "expense_edit_partial.html")
 	if err != nil {
 		return nil, err
 	}
 
 	templates["expense_edit_partial"] = t
 
-	t, err = template.New("").Funcs(funcMap).ParseFiles(tmplDir + "/error.html")
+	t, err = template.New("").Funcs(funcMap).ParseFS(sub, "error.html")
 	if err != nil {
 		return nil, err
 	}
