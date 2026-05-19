@@ -5,25 +5,28 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/siddhantagarwal/expense-manager/internal/middleware"
 	"github.com/siddhantagarwal/expense-manager/internal/services"
 )
 
 type reportListData struct {
-	Username               string
-	DefaultCurrency        string
-	NumberFormat           string
-	CategoryBreakdowns     []services.CategoryBreakdown
-	CategoryBreakdownsJSON template.JS
-	CategoryIcons          map[string]string
-	CategoryIconIDs        []string
-	CategoryIconIDsJSON    template.JS
-	MonthlyTotals          []services.MonthSummary
-	TotalSpent             float64
-	FilterFrom             string
-	FilterTo               string
-	HasData                bool
+	Username                 string
+	DefaultCurrency          string
+	NumberFormat             string
+	CategoryBreakdowns       []services.CategoryBreakdown
+	CategoryBreakdownsJSON   template.JS
+	CategoryIcons            map[string]string
+	CategoryIconIDs          []string
+	CategoryIconIDsJSON      template.JS
+	MonthlyTotals            []services.MonthSummary
+	MonthlyCategoryChartJSON template.JS
+	TotalSpent               float64
+	FilterFrom               string
+	FilterTo                 string
+	HasData                  bool
 }
 
 func (h *Handlers) ReportList(w http.ResponseWriter, r *http.Request) {
@@ -52,6 +55,17 @@ func (h *Handlers) ReportList(w http.ResponseWriter, r *http.Request) {
 
 	categoryJSON, _ := json.Marshal(categoryBreakdowns)
 
+	year := strconv.Itoa(time.Now().Year())
+
+	if from != "" && len(from) >= 4 {
+		if y, err := strconv.Atoi(from[:4]); err == nil {
+			year = strconv.Itoa(y)
+		}
+	}
+
+	monthlyCategoryChart := services.MonthlyCategoryTotals(ud.Expenses, year)
+	monthlyCategoryChartJSON, _ := json.Marshal(monthlyCategoryChart)
+
 	iconIDs := make([]string, len(categoryBreakdowns))
 	for i, cb := range categoryBreakdowns {
 		iconIDs[i] = services.CategoryIconID(cb.Category, ud.CategoryIcons)
@@ -60,19 +74,20 @@ func (h *Handlers) ReportList(w http.ResponseWriter, r *http.Request) {
 	iconIDsJSON, _ := json.Marshal(iconIDs)
 
 	data := reportListData{
-		Username:               username,
-		DefaultCurrency:        user.DefaultCurrency,
-		NumberFormat:           user.NumberFormat,
-		CategoryBreakdowns:     categoryBreakdowns,
-		CategoryBreakdownsJSON: template.JS(categoryJSON),
-		CategoryIcons:          ud.CategoryIcons,
-		CategoryIconIDs:        iconIDs,
-		CategoryIconIDsJSON:    template.JS(iconIDsJSON),
-		MonthlyTotals:          monthlyTotals,
-		TotalSpent:             totalSpent,
-		FilterFrom:             from,
-		FilterTo:               to,
-		HasData:                len(ud.Expenses) > 0,
+		Username:                 username,
+		DefaultCurrency:          user.DefaultCurrency,
+		NumberFormat:             user.NumberFormat,
+		CategoryBreakdowns:       categoryBreakdowns,
+		CategoryBreakdownsJSON:   template.JS(categoryJSON),
+		CategoryIcons:            ud.CategoryIcons,
+		CategoryIconIDs:          iconIDs,
+		CategoryIconIDsJSON:      template.JS(iconIDsJSON),
+		MonthlyTotals:            monthlyTotals,
+		MonthlyCategoryChartJSON: template.JS(monthlyCategoryChartJSON),
+		TotalSpent:               totalSpent,
+		FilterFrom:               from,
+		FilterTo:                 to,
+		HasData:                  len(ud.Expenses) > 0,
 	}
 
 	if err := h.templates["reports"].ExecuteTemplate(w, "reports.html", data); err != nil {

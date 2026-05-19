@@ -65,7 +65,6 @@
   </table>
 </section>
 <script>
-(function() {
   var numberFormat = {{.NumberFormat | printf "%q"}};
 
   function formatNumber(value) {
@@ -115,6 +114,7 @@
     return integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   }
 
+(function() {
   var categories = {{.CategoryBreakdownsJSON}};
   var iconIDs = {{.CategoryIconIDsJSON}};
   var labels = categories.map(function(c) { return c.Category; });
@@ -190,6 +190,42 @@
     </tbody>
   </table>
 </section>
+{{end}}
+
+{{if .MonthlyCategoryChartJSON}}
+<section class="section">
+  <h2>Monthly Breakdown</h2>
+  <div class="chart-container-wide">
+    <canvas id="monthlyStackedChart"></canvas>
+  </div>
+</section>
+<script>
+(function() {
+  var chartData = {{.MonthlyCategoryChartJSON}};
+  new Chart(document.getElementById('monthlyStackedChart'), {
+    type: 'bar',
+    data: chartData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true }
+      },
+      plugins: {
+        legend: { display: true, position: 'bottom' },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              return ctx.dataset.label + ': ' + formatNumber(ctx.raw) + ' ({{.DefaultCurrency}})';
+            }
+          }
+        }
+      }
+    }
+  });
+})();
+</script>
 {{end}}
 
 {{else}}
