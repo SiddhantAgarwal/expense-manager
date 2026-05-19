@@ -2,6 +2,8 @@ package services
 
 import (
 	"sort"
+	"strconv"
+	"strings"
 
 	"github.com/siddhantagarwal/expense-manager/internal/models"
 )
@@ -17,6 +19,17 @@ type MonthSummary struct {
 	Month string
 	Total float64
 	Count int
+}
+
+type MonthlyCategoryDataset struct {
+	Label           string    `json:"label"`
+	Data            []float64 `json:"data"`
+	BackgroundColor string    `json:"backgroundColor"`
+}
+
+type MonthlyCategoryChart struct {
+	Labels   []string                 `json:"labels"`
+	Datasets []MonthlyCategoryDataset `json:"datasets"`
 }
 
 func filterByDateRange(expenses []models.Expense, from, to string) []models.Expense {
@@ -109,6 +122,80 @@ func MonthlyTotals(expenses []models.Expense, from, to string) []MonthSummary {
 	})
 
 	return totals
+}
+
+func MonthlyCategoryTotals(expenses []models.Expense, year string) MonthlyCategoryChart {
+	colors := []string{
+		"#4f46e5", "#06b6d4", "#16a34a", "#f59e0b",
+		"#dc2626", "#8b5cf6", "#ec4899", "#14b8a6",
+		"#f97316", "#6366f1", "#84cc16", "#e11d48",
+	}
+
+	labels := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+
+	prefix := year + "-"
+
+	catMonthTotals := make(map[string][12]float64)
+	catTotals := make(map[string]float64)
+
+	for _, e := range expenses {
+		if !strings.HasPrefix(e.Date, prefix) {
+			continue
+		}
+
+		if len(e.Date) < 7 {
+			continue
+		}
+
+		monthStr := e.Date[5:7]
+
+		monthIdx, err := strconv.Atoi(monthStr)
+		if err != nil || monthIdx < 1 || monthIdx > 12 {
+			continue
+		}
+
+		var arr [12]float64
+		if existing, ok := catMonthTotals[e.Category]; ok {
+			arr = existing
+		}
+
+		arr[monthIdx-1] += e.AmountBase
+		catMonthTotals[e.Category] = arr
+		catTotals[e.Category] += e.AmountBase
+	}
+
+	type catTotal struct {
+		Category string
+		Total    float64
+	}
+
+	cats := make([]catTotal, 0, len(catTotals))
+	for cat, total := range catTotals {
+		cats = append(cats, catTotal{Category: cat, Total: total})
+	}
+
+	sort.Slice(cats, func(i, j int) bool {
+		return cats[i].Total > cats[j].Total
+	})
+
+	datasets := make([]MonthlyCategoryDataset, 0, len(cats))
+	for i, ct := range cats {
+		data := make([]float64, 12)
+		if arr, ok := catMonthTotals[ct.Category]; ok {
+			copy(data, arr[:])
+		}
+
+		datasets = append(datasets, MonthlyCategoryDataset{
+			Label:           ct.Category,
+			Data:            data,
+			BackgroundColor: colors[i%len(colors)],
+		})
+	}
+
+	return MonthlyCategoryChart{
+		Labels:   labels,
+		Datasets: datasets,
+	}
 }
 
 func TotalSpent(expenses []models.Expense, from, to string) float64 {

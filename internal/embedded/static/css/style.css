@@ -632,6 +632,12 @@ main {
   font-size: 0.85rem;
 }
 
+.chart-container-wide {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto 1.5rem;
+}
+
 .chart-legend-color {
   width: 12px;
   height: 12px;
