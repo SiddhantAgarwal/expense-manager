@@ -72,6 +72,7 @@ PORT=3000 DATA_DIR=/var/lib/expense-manager ./expense-manager
 
 - **Category breakdown** — doughnut chart + table showing spending by category
 - **Monthly trend** — month-over-month spending comparison table
+- **Month-on-month bar chart** — grouped bar chart showing spending by category across all 12 months of the selected year
 - **Date range filtering** — filter all reports by custom from/to dates
 - All amounts displayed in your default currency
 - Powered by Chart.js
@@ -128,7 +129,7 @@ PORT=3000 DATA_DIR=/var/lib/expense-manager ./expense-manager
 | Expenses | Filterable expense list with inline edit/delete |
 | Budgets | Budget management with spending progress bars |
 | Recurring | Manage weekly/monthly/yearly recurring expenses |
-| Reports | Category breakdown chart + monthly trend table |
+| Reports | Category breakdown chart, monthly trend table, and month-on-month bar chart |
 | Settings | Currency, exchange rates, categories, password |
 
 ---
