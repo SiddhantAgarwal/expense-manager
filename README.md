@@ -198,6 +198,30 @@ A background goroutine runs on startup and then every hour to check for recurrin
 
 ---
 
+## Releases
+
+Prebuilt binaries for Linux, macOS, and Windows are available on the [GitHub Releases](https://github.com/siddhantagarwal/expense-manager/releases) page.
+
+### Download a Release
+
+Download the archive for your platform, extract it, and run the binary:
+
+```bash
+# Linux / macOS
+./expense-manager
+
+# Windows
+expense-manager.exe
+```
+
+### Install with Go
+
+```bash
+go install github.com/siddhantagarwal/expense-manager/cmd/server@latest
+```
+
+---
+
 ## Development
 
 ### Build

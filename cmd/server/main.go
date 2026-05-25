@@ -22,6 +22,12 @@ import (
 	"github.com/siddhantagarwal/expense-manager/internal/store"
 )
 
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -104,7 +110,7 @@ func main() {
 	recurringSvc := services.NewRecurringProcessor(st)
 	recurringSvc.Start(ctx)
 
-	log.Printf("Starting expense manager on :%s", port)
+	log.Printf("Starting expense manager %s (commit %s, built %s) on :%s", version, commit, date, port)
 
 	server := &http.Server{
 		Addr:    ":" + port,
